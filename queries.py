@@ -11,3 +11,4 @@ get_comments = "select * from bugs.longdescs where bug_id = %s order by comment_
 get_assigne_name ="select userid,login_name from bugs.profiles where userid in (select distinct(assigned_to) from bugs.bugs where product_id ='1073')"
 fetch_distinct_type = "select distinct(bugs.cf_type) from bugs.bugs where product_id = '1073'"
 fetch_cclist = "select userid,login_name from bugs.profiles where userid in(select who from bugs.cc)"
+fetch_components = "select id,name from bugs.components where id in (select component_id from bugs.bugs where product_id='1073' )"

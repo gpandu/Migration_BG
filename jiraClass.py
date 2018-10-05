@@ -33,19 +33,49 @@ class jira(object):
          return browser
      
      def process_os(bugzila_record,default_value):
-        if(bugzila_record.op_sys=='None'):
+        if(bugzila_record=='None'):
             os ='Others'
-        elif(bugzila_record.op_sys=='All'):
+        elif(bugzila_record=='All'):
             os = 'All'
-        elif('Windows' is bugzila_record.op_sys):
+        elif('Windows' is bugzila_record):
             os = 'Windows'
-        elif('RHEL' is bugzila_record.op_sys):
+        elif('RHEL' is bugzila_record):
             os = 'Linux'
-        elif('Sun' is bugzila_record.op_sys):
+        elif('Sun' is bugzila_record):
             os = 'Solaris Sparc'
         else :
             os = default_value
         return os
+    
+     def process_severity(bugzila_record,default_value):
+         if(bugzila_record=='major'):
+             severity = 'Major'
+         elif(bugzila_record == 'minor' or bugzila_record == 'normal'):
+             severity = 'Normal'
+         elif(bugzila_record == 'critical'):
+             severity = 'Critical'
+         elif(bugzila_record == 'blocker'):
+             severity = 'Blocker'
+         elif(bugzila_record == 'trivial'):
+             severity = 'Trivial'
+         else:
+             severity ='some deafult value'
+         return severity
+     
+     def process_priority(bugzila_record,default_value):
+        if(bugzila_record=='P1'):
+            priority = 'P1-Critical'
+        elif(bugzila_record == 'P2'):
+            priority = 'P2-High'
+        elif(bugzila_record == 'P3'):
+            priority = 'P3-Normal'
+        elif(bugzila_record == 'P4'):
+            priority = 'P4-Minority/Request'
+        elif(bugzila_record == 'P5'):
+            priority = 'P5-Review Priority'
+        else:
+            priority = 'Medium'
+        return priority
         
         
 

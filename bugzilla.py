@@ -7,6 +7,7 @@ from jiraClass import jira
 import jsonpickle
 
 users = {}
+components_result = {}
 
 
 def process_columns(record):
@@ -17,19 +18,20 @@ def process_columns(record):
     comments = record.process_comments()
     jira_obj = jira(summary)
     jira_obj.comments = comments
-    jira_obj.assignee = users
+    jira_obj.assignee = users[record.assigned_to]
+    jira_obj.components = components_result[record.component_id]
     #jira_obj.user_name = utilities.assignee_result[record.assigned_to]
-    jira_obj.bug_severity = record.bug_severity
-    jira_obj.bug_status = record.bug_status
-    jira_obj.priority = record.priority
-    jira_obj.creation_ts = record.creation_ts
+    jira_obj.bug_severity = jira.process_severity(record.bug_severity,'some default value')
+    jira_obj.status = record.bug_status
+    jira_obj.priority = jira.process_priority(record.priority,'some default value')
+    jira_obj.creation_ts = record.creation_ts.isoformat()
     jira_obj.product_id = record.product_id
-    jira_obj.component_id = record.component_id
+    #jira_obj.component_id = record.component_id
     jira_obj.resolution = record.resolution
          
     jira_obj.phase_of_detection = jira.process_record_validation(record.cf_client_phase,'some default value')
     jira_obj.fix_version =   jira.process_record_validation(record.cf_fixes_available,'some default value')   
-    jira_obj.test_engineer = users
+    jira_obj.test_engineer = users[record.assigned_to]
     jira_obj.issue_type = jira.process_issue_type(record.cf_type,'some default value')
     jira_obj.test_caseid = record.cf_testcaseid        
     jira_obj.build = record.cf_build
@@ -38,15 +40,17 @@ def process_columns(record):
     else:
         jira_obj.estimated_time = record.record.estimated_time
     if(record.remaining_time != None):
-        jira_obj.reamaining_estimate = utilities.formattime(record.remaining_time)
+        jira_obj.remaining_estimate = utilities.formattime(record.remaining_time)
     else:
-        jira_obj.reamaining_estimate = record.remaining_time
-        jira_obj.due_date = record.deadline
+        jira_obj.remaining_estimate = record.remaining_time
+    if(record.deadline!=None):    
+        jira_obj.due_date = record.deadline.isoformat()
         
     jira_obj.browser = jira.process_browser(record.cf_browser,'some default value')     
     jira_obj.os = jira.process_os(record.op_sys,'some default value')
     json_string =jsonpickle.encode(jira_obj)
     print(json_string)
+    print("")
 # =============================================================================
 #     issue_dict = {
 #          "project": {"key": "TEST"},
@@ -78,6 +82,8 @@ if __name__ == "__main__":
     query2 = queries.get_bugCount
     query_for_assignee = queries.get_assigne_name
     users = utilities.getAssignee(query_for_assignee)
+    query_for_components = queries.fetch_components
+    components_result = utilities.getComponents(query_for_components)
     project_name = utilities.getQueryResult(query1)
     bug_count = utilities.getQueryResult(query2)
     print(bug_count)

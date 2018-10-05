@@ -9,6 +9,7 @@ import mysql.connector
 
 section_name = 'DB_CREDENTIALS'
 assignee_result ={}
+components_result = {}
 
 def readProperty(section, property_name):
     config = configparser.ConfigParser()
@@ -52,6 +53,20 @@ def getAssignee(query):
     finally:
             cursor.close()
             connection.close()
+            
+def getComponents(query):
+    try:
+        connection = getConnection()
+        cursor = connection.cursor()
+        cursor.execute(query)      
+        for (component_id,coomponent_name) in cursor:
+            components_result[component_id]  = coomponent_name
+        return components_result
+    except Exception as e:
+            print('exception occured while fetching components'.format(e))
+    finally:
+            cursor.close()
+            connection.close()       
      
 def getQueryResult(query):
    try:
