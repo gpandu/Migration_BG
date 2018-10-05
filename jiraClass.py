@@ -5,7 +5,7 @@ class jira(object):
          self.summary = summary
 
      def process_record_validation(bugzila_value,default_value):
-        if(bugzila_value!=None and bugzila_value!='---'):
+        if(bugzila_value!=None and bugzila_value!='\-\-\-'):
             jira_value=bugzila_value
         else:
             jira_value=default_value
@@ -76,17 +76,6 @@ class jira(object):
         else:
             priority = 'Medium'
         return priority
-        
-        
-
-
-class comment(object):
-    
-    def __init__(self,comment_id):
-        self.comment_id = comment_id
-        
-    def add_comment(self,date_time):
-        self.c_date = date_time.isoformat()
         
     
     

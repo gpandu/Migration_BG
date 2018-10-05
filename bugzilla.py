@@ -1,10 +1,10 @@
+
 import utilities
 import queries
 from bugzilla_record import bug_record
-import jiramigragtion
-import json
 from jiraClass import jira
-import jsonpickle
+from comment import process_comments
+from attachment import process_attachment
 
 users = {}
 components_result = {}
@@ -15,7 +15,8 @@ def process_columns(record):
     #project_name = utilities.getQueryResultWith(queries.project_name)
     summary = record.summary
     #component = utilities.getQueryResultWith(queries.component_name,record.component_id)
-    comments = record.process_comments()
+    comments = process_comments(record.bug_id,users)
+    attachments = process_attachment(record.bug_id) 
     jira_obj = jira(summary)
     jira_obj.comments = comments
     jira_obj.assignee = users[record.assigned_to]
@@ -48,23 +49,20 @@ def process_columns(record):
         
     jira_obj.browser = jira.process_browser(record.cf_browser,'some default value')     
     jira_obj.os = jira.process_os(record.op_sys,'some default value')
-    json_string =jsonpickle.encode(jira_obj)
-    print(json_string)
-    print("")
-# =============================================================================
-#     issue_dict = {
-#          "project": {"key": "TEST"},
-#          "summary": summary,
-#          "description": summary,
-#          "issuetype": {"name": "Bug"},
-#          "customfield_10513": "NA",
-#          "components": [{"name": "test"}],
-#          "customfield_10503" : {"value": "UAT"},
-#          "versions": [{"name": "Shatha1"}]
-#            }
-# =============================================================================
-    #jira_client = jiramigragtion.getJiraClient()
-   # new_issue = jira_client.create_issue(fields=issue_dict)
+
+    issue_dict = {
+          "project": {"key": "TEST"},
+          "summary": summary,
+          "description": summary,
+          "issuetype": {"name": "Bug"},
+          "customfield_10513": "NA",
+          "components": [{"name": "test"}],
+          "customfield_10503" : {"value": "UAT"},
+          "versions": [{"name": "Shatha1"}]
+            }
+
+    #jira = jira_client.getJiraClient()
+   # new_issue = jira.create_issue(fields=issue_dict)
    # print(new_issue.fields)
 
 def getColumns():
@@ -78,17 +76,17 @@ def getColumns():
 
 
 if __name__ == "__main__":
-    query1 = queries.get_project
-    query2 = queries.get_bugCount
+    get_project = queries.get_project
+    get_bugCount = queries.get_bugCount
     query_for_assignee = queries.get_assigne_name
     users = utilities.getAssignee(query_for_assignee)
     query_for_components = queries.fetch_components
     components_result = utilities.getComponents(query_for_components)
-    project_name = utilities.getQueryResult(query1)
-    bug_count = utilities.getQueryResult(query2)
+    project_name = utilities.getQueryResult(get_project)
+    bug_count = utilities.getQueryResult(get_bugCount)
     print(bug_count)
-    query3 = queries.get_bugIds
-    bug_ids = utilities.getQueryResultSet(query3)
+    get_bugIds = queries.get_bugIds
+    bug_ids = utilities.getQueryResultSet(get_bugIds)
     i = 1
     for bug in bug_ids:
         try:
