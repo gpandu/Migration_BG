@@ -12,17 +12,25 @@ class jira_record(object):
         
         return jira_value
     
-     def process_issue_type(self,bugzila_record,defalut_value):
+     def process_issue_type(self,bugzila_record,default_value):
         if(bugzila_record=='Defect'):
             issue_type = 'Bug'
         elif(bugzila_record=='Change Request'):
             issue_type = 'Improvement'
         else:
-            issue_type = 'Bug'
+            issue_type = default_value
         return issue_type
     
      def process_browser(self,bugzila_record,default_value):
-         if('IE' is bugzila_record):
+         if(bugzila_record =='IE 8.0'):
+             browser = 'IE 8.0'
+         elif(bugzila_record == 'IE 9.0') :
+             browser = 'IE 9.0'
+         elif(bugzila_record == 'IE 10.0') :
+             browser = 'IE 10'
+         elif(bugzila_record == 'IE 11.0') :
+             browser = 'IE 11'
+         elif('IE' is bugzila_record):
              browser = 'Internet Explorer'
          elif('FireFox' is bugzila_record):
             browser = 'Mozila FireFox'
@@ -59,7 +67,7 @@ class jira_record(object):
          elif(bugzila_record == 'trivial'):
              severity = 'Trivial'
          else:
-             severity ='some deafult value'
+             severity = default_value
          return severity
      
      def process_priority(self,bugzila_record,default_value):
