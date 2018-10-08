@@ -6,6 +6,7 @@ Created on Wed Aug 29 18:10:19 2018
 """
 import configparser
 import mysql.connector
+import queries
 
 section_name = 'DB_CREDENTIALS'
 assignee_result ={}
@@ -40,11 +41,11 @@ def getQueryResultSet(query):
       cursor.close()
       connection.close()
       
-def getAssignee(query):
+def get_users():
     try:
         connection = getConnection()
         cursor = connection.cursor()
-        cursor.execute(query)      
+        cursor.execute(queries.get_assigne_name)      
         for (user_id,login_name) in cursor:
             assignee_result[user_id]  = login_name
         return assignee_result
@@ -54,13 +55,27 @@ def getAssignee(query):
             cursor.close()
             connection.close()
             
-def getComponents(query):
+def get_project_users():
     try:
         connection = getConnection()
         cursor = connection.cursor()
-        cursor.execute(query)      
-        for (component_id,coomponent_name) in cursor:
-            components_result[component_id]  = coomponent_name
+        cursor.execute(queries.get_project_users)      
+        for (user_id,login_name) in cursor:
+            assignee_result[user_id]  = login_name
+        return assignee_result
+    except Exception as e:
+            print('exception occured while fetching assignee'.format(e))
+    finally:
+            cursor.close()
+            connection.close()
+            
+def getComponents():
+    try:
+        connection = getConnection()
+        cursor = connection.cursor()
+        cursor.execute(queries.fetch_components)      
+        for (component_id,component_name) in cursor:
+            components_result[component_id]  = component_name
         return components_result
     except Exception as e:
             print('exception occured while fetching components'.format(e))
