@@ -25,7 +25,7 @@ def get_attachment(attach_id):
             attach_type = response.getheader('Content-disposition')
         filename = attach_type.split(';')[1].split('=')[1]
         content = response.read()
-        content = StringIO(content.decode('utf-8'))
+        #content = StringIO(content.decode('utf-8'))
         return content,filename.strip("\"")
     except Exception as e:
         print(e)

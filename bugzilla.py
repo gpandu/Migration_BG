@@ -21,15 +21,8 @@ def process_columns(record,jira):
     #project_name = utilities.getQueryResultWith(queries.project_name)
     summary = record.summary
     #component = utilities.getQueryResultWith(queries.component_name,record.component_id)
-    jira_obj = jira_record(summary)
-    try:
-        user = users[record.assigned_to]      
-        if(user is None):
-            jira_obj.assignee = default_users[0]
-        else:
-            jira_obj.assignee = user if users_map[user] == 'Y' else default_users[0]
-    except Exception as e:
-        jira_obj.assignee = default_users[0]
+    jira_obj = jira_record(summary)  
+    jira_obj.assignee = utilities.get_user(record.assigned_to,jira)
         
     jira_obj.components = components_result[record.component_id]
     #jira_obj.user_name = utilities.assignee_result[record.assigned_to]
@@ -75,13 +68,15 @@ def process_columns(record,jira):
           "customfield_10601": {"value": default_users[0]}  
             }
     
+   
+    update = {"customfield_10601" : {"name" : jira_obj.test_engineer}}
     
     #new_issue = jira.create_issue(fields=issue_dict)
     new_issue = jira.issue('TPFWD-2')
-    jira.assign_issue(new_issue, jira_obj.assignee)
-    process_comments(record.bug_id,jira,new_issue)
-   
-   # print(new_issue.fields)
+    transitions = jira.transitions(new_issue)
+    new_issue.update(update)
+    #description = process_comments(record.bug_id,jira,new_issue)
+    print(new_issue.fields)
 
 def getColumns():
     columns = utilities.readProperty('LOG_ATTRIBUTES','COLUMNS')
@@ -97,10 +92,10 @@ if __name__ == "__main__":
     jira = jira_client.getJiraClient()
     get_project = queries.get_project
     get_bugCount = queries.get_bugCount
-    default_users = pre_hooks.get_default_users()
+    default_users = utilities.get_default_users()
     default_values = pre_hooks.get_default_values()
     #users = utilities.get_users() 
-    users_map,users = pre_hooks.get_existing_users(jira)
+    #users_map,users = pre_hooks.get_existing_users(jira)
     components_result = utilities.getComponents()
     project_name = utilities.getQueryResult(get_project)
     bug_count = utilities.getQueryResult(get_bugCount)
@@ -125,7 +120,7 @@ if __name__ == "__main__":
         finally:
             cursor.close()
             connection.close()
-        if(i>=1):
+        if(i>=2):
             break
         i+=1
     
